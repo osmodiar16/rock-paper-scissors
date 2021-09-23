@@ -1,3 +1,34 @@
+const buttons = document.querySelectorAll("button");
+const setPlayerSelection = e => {
+    if (e.target.id === "rock")
+        playerSelection = "rock";
+    else if (e.target.id === "paper")
+        playerSelection = "paper";
+    else
+        playerSelection = "scissors";
+
+    computerPlay();
+
+    if(keepPlaying)
+        playRound(playerSelection, computerSelection);
+
+    checkScore();
+}
+
+buttons.forEach(button => {
+    button.addEventListener('click', setPlayerSelection);
+});
+
+const computerScoreTag = document.querySelector("#computer span");
+const playerScoreTag = document.querySelector("#player span");
+const resultTag = document.querySelector("#round-result");
+
+
+const updateScore = () => {
+    computerScoreTag.textContent = `${computerWins}`;
+    playerScoreTag.textContent = `${playerWins}`;
+}
+
 function playRound(playerSelection, computerSelection) {
     //Tie-> 0, Computer-> 1, Player->2
     let winner = 0;
@@ -31,15 +62,21 @@ function playRound(playerSelection, computerSelection) {
     }
     
     if(winner == 0 ){
-        return("It's a tie");
+        resultTag.textContent = "It's a Tie";
+        console.log("It's a tie");
     }else if(winner == 1){
-        return(`Computer wins! ${computerSelection} beats ${playerSelection}`);
+        computerWins++;
+        updateScore();
+        resultTag.textContent = `Computer wins the round! ${computerSelection} beats ${playerSelection}`;
     }else{
-        return(`Player wins! ${playerSelection} beats ${computerSelection}`);
+        playerWins++;
+        updateScore();
+        resultTag.textContent = `Player wins the round! ${playerSelection} beats ${computerSelection}`;
     }
+    console.log(`SCORE computer:${computerWins} player:${playerWins}`);
 }
 
-let computerPlay = () => {
+const computerPlay = () => {
     const computerRandomSelection = Math.floor(Math.random()*3);
     let randomSelection = "";
     switch (computerRandomSelection) {
@@ -53,10 +90,33 @@ let computerPlay = () => {
             randomSelection = "scissors";
             break;
     }
-    return randomSelection
+    computerSelection = randomSelection;
 }
+let playerSelection = "";
+// let computerSelection = computerPlay();
+let computerSelection = "";
+console.log(buttons);
 
-const playerSelection = "paper";
-const computerSelection = computerPlay();
-console.log(`Computer selection ${computerSelection} ||| player selection: ${playerSelection}`);
-console.log(playRound(playerSelection, computerSelection));
+let computerWins = 0;
+let playerWins = 0;
+let winner;
+let keepPlaying = true;
+
+let checkScore = () =>{
+    if(computerWins < 5 && playerWins < 5){
+        keepPlaying = true;
+        console.log("now winner yet");
+    }else{
+        keepPlaying = false;
+        if(computerWins == 5){
+            winner = "computer";
+            resultTag.textContent = `The winner is computer! Try Again!`;
+            console.log("computer won the game");
+        }
+        else{
+            console.log("player won the game");
+            resultTag.textContent = `The winner is player!`;
+            winner = "player"
+        }
+    }
+}
